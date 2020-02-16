@@ -1,0 +1,149 @@
+// ----------------------------------------------------------
+Mode can be 'development' or 'production'. 
+In dev mode output chunks containt structured code with comments.
+In production code output chunks contain code in its minimized vesrion.
+  mode: 'development'
+
+In package.json in script field add:
+  "dev": "webpack --mode development",
+  "build": "webpack --mode production"
+  "watch": "webpack --mode development --watch"
+to build project in development mode or in production,
+to rebuild project in case of saving changes in files
+
+// ----------------------------------------------------------
+In package.json change "main": "index.js" to "private": "true"
+That means that current project is not a package and shouldn't be published
+
+// ----------------------------------------------------------
+Entry: head (father) js script path.
+  entry: './src/index.js
+
+Multiple entries can be used (one entry for main project scripts, and another is for side script).
+  entry: {
+    main: './src/index.js',
+    sideScript1: './src/sideScript1.js',
+    sideScriptN: './src/sideScriptN.js',
+  }
+
+// ----------------------------------------------------------
+context allows to point the directory where source files are.
+In this case entry field take it as the basic folder.
+  context: path.resolve(__dirname, 'src'),
+  entry: './index.js',
+
+
+// ----------------------------------------------------------
+Output points name and path of output 'webpacked' files.
+  output: {
+    filename: bundle.js,
+    path: path.resolve(__dirname, 'dist'),
+  }
+
+or if multible entries are used
+  output: {
+    filename: [name].[contenthash].js,
+    path: path.resolve(__dirname, 'dist'),
+  }
+
+// ----------------------------------------------------------
+Plugins are used to automate some necessary actions during the building/rebuilding
+(like removing old chunks, adding pathes to html files and adding styles, images and other
+files to js files).
+
+  plugins: [
+    new somePluginClassInstance(),
+  ]
+
+1. html-webpack-pluging - allows to add pathes of chunks to html file.
+  const HTMLWebpackPlugin = require('html-webpack-pluging');
+
+Tt can accept object as argumet: 
+  {
+    title: 'titleName', // not working if template is defined
+    template: 'path/To/HtmlTemplate.html'
+  }
+
+
+2. clean-webpack-plugin - cleans output directory before rebuilding.
+  const { CleanWebpackPlugin }= require('clean-webpack-pluging');
+
+3. copy-webpack-plugins - allows to move files to another dir when building
+
+// ----------------------------------------------------------
+Loaders allow webpack to work with some extra fuctionality like import css, xml, csv ...
+Extra functionality added in module field:
+  module: {
+    rules: [
+      {
+        test: /\.css$/                        // regular expression (to work with css)
+        use: ['style-loader', 'css-loader']   // webpack goes from right to left, 
+                                              // css-loader allows webpack to work with css
+                                              // style-loader adds styles in section head of html
+      }
+    ]
+  }
+
+Loaders are installed using npm: 
+1. css-loader
+2. style-loader
+
+By default webpack works with json without loaders.
+So:
+  import json from './path/to/file.json';
+  console.log(json) // => prints json as object
+
+3. file-loader - allows to import files in js files
+
+It's possible to add css1 to another css2 so css2 have allowance to css1 variable, like
+css1:
+  @font-face {
+    font-family: 'SomeFont';
+    src: url('path/to/someFont.ttf') format('truetype');
+  }
+css2:
+  @import css1.css 
+
+4. xml-loader - allows to import xml files in js
+5. csv-loader, papaparse - allow to import csv files in js
+
+
+// ----------------------------------------------------------
+Adding libraries from node_modules directory.
+In .css file: 
+  @import '~libraryName'
+
+~ means to look in node_modules directory
+
+In js files:
+import * as $ from 'jquery';
+...
+$('someTag').html = 'imported library using webpack';
+
+If few js files require the same library, it would be useful to define library
+only in one output chunk.
+Add:
+  optimization: {
+    splitChunks: {
+      chunks: 'all,
+    }
+  }
+
+// ----------------------------------------------------------
+Add to webpack property below to tell webpack 
+  resolve: {
+    extensions: ['.js', '.json', '.png'],               // "look for such extension in imports if others are not pointed"
+    alias: {
+      '@models': path.resolve(__dirname, 'src/models')  // @models/pathToFile - used to simplify working with pathes
+                                                        // in imports
+    }
+  }
+
+// ----------------------------------------------------------
+Add dev server to automatically renew page after changing code.
+Use webpack-dev-server
+  devServer: {
+    port: 4200
+  }
+And add in package.json script:
+  "start": "webpack-dev-server --mode development --open"
