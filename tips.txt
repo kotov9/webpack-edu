@@ -320,3 +320,45 @@ Add .eslintrc to project root folder
     "eslint:recommended"
   ]
 }
+
+// ----------------------------------------------------------
+Using dynamic imports for lazy loading.
+On lodash example.
+In some js file:
+  import('lodash').then(_ => console.log('Lodash', _.random(0, 100, true)));
+  
+// ----------------------------------------------------------
+Analazing final bundle.
+npm i -D webpack-bundle-analyzer
+
+  const {BundleAnalyzerPlugin} = require('webpack-bundle-analyzer');
+  
+  const plugins = () => {
+    const base = [
+      new HTMLWebpackPlugin({
+        template: './index.html',
+        minify: {
+          collapseWhitespace: isProd,
+        },
+      }),
+      new CleanWebpackPlugin(),
+      new CopyWebpackPlugin([
+        {
+          from: path.resolve(__dirname, 'src/assets/favicon.ico'),
+          to: path.resolve(__dirname, 'dist'),
+        }
+      ]),
+      new MiniExtractCssPlugin({
+        filename: filename('css')
+      })
+    ];
+    
+    if (isProd) {
+      base.push(new BundleAnalyzerPlugin());
+    }
+    
+    return base;
+  }
+  
+Add to package.json script:
+  "stats": "webpack --json > statistics.json && webpack-bundle-analyzer stats.json"
