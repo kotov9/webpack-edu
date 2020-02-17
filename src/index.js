@@ -7,6 +7,7 @@ import * as $ from 'jquery';
 import WebpackLogo from './assets/image.png';
 // import xml from './assets/xml.xml';
 // import csv from './assets/csv.csv';
+import './babel.js';
 
 const post = new Post("Webpack", WebpackLogo);
 // console.log(json);

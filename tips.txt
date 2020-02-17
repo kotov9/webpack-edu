@@ -117,6 +117,14 @@ Tt can accept object as argumet:
   }
   
   optimization: optimiztion(),
+  plugins: [
+    new HTMLWebpackPlugin({
+      template: './index.html',
+      minify: {
+        collapseWhitespace: isProd,
+      },
+    }),
+    ...
 
 // ----------------------------------------------------------
 Loaders allow webpack to work with some extra fuctionality like import css, xml, csv ...
@@ -195,3 +203,46 @@ Use webpack-dev-server
   }
 And add in package.json script:
   "start": "webpack-dev-server --mode development --open"
+  
+// ----------------------------------------------------------
+Add support of preprocessors:
+less, node-sass, less-loader, sass-loader - used to convert scss/sass/less to css
+  const cssLoaders = (extra) => {
+    const loaders = [
+      {
+        loader: MiniExtractCssPlugin.loader,
+        options: {
+          hmr: isDev,
+          reloadAll: true
+        }
+      },
+      'css-loader'
+    ];
+  
+  module: {
+    rules: [
+      {
+        test: /\.css$/,
+        use: cssLoaders()
+      },
+      {
+        test: /\.less$/,
+        use: cssLoaders('less-loader')
+      },
+      {
+        test: /\.s[ca]ss$/,
+        use: cssLoaders('sass-loader')
+      },
+
+// ----------------------------------------------------------
+Adding babel to roject.
+npm install --save-dev babel-loader @babel/core
+npm install --save-dev @babel/preset-env
+npm install --save @babel/polyfill
+
+Add in package.json:
+  "browserslist": "> 0.25%, not dead"
+
+In webpack.config.js:
+  entry: {
+      main: ['@babel/polyfill', './index.js'],
