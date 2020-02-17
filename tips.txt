@@ -69,6 +69,54 @@ Tt can accept object as argumet:
   const { CleanWebpackPlugin }= require('clean-webpack-pluging');
 
 3. copy-webpack-plugins - allows to move files to another dir when building
+  new CopyWebpackPlugin([
+    {
+      from: path.resolve(__dirname, 'src/assets/favicon.ico'),
+      to: path.resolve(__dirname, 'dist'),
+    }
+  ])
+
+4. mini-css-extract-plugin - allow to put css into separate file after building
+  new MiniExtractCssPlugin({
+    filename: '[name].[hash].css'
+  })
+  
+  module.rules -> 
+  {
+        test: /\.css$/,
+        use: [
+          {
+            loader: MiniExtractCssPlugin.loader,
+            options: {
+              hmr: isDev,
+              reloadAll: true
+            }
+          },
+          'css-loader'
+        ]
+      }
+
+5. terser-webpack-plugin - allows to optimise and unglify js
+6. optimize-css-assets-webpack-plugin - allows to optimize css
+
+  const optimiztion = () => {
+    const config = {
+      splitChunks: {
+        chunks: 'all'
+      }
+    }
+    
+    if (isProd) {
+      config.minimizer = [
+        new OptimizeCssAssetsWebpackPlugin(),
+        new TerserWebpackPlugin(),
+      ]
+    }
+    
+    return config;
+  }
+  
+  optimization: optimiztion(),
 
 // ----------------------------------------------------------
 Loaders allow webpack to work with some extra fuctionality like import css, xml, csv ...
