@@ -26,6 +26,26 @@ const optimiztion = () => {
   return config;
 }
 
+const filename = ext => isDev ? `[name].${ext}` : `[name].[hash].${ext}`;
+
+const cssLoaders = (extra) => {
+  const loaders = [
+    {
+      loader: MiniExtractCssPlugin.loader,
+      options: {
+        hmr: isDev,
+        reloadAll: true
+      }
+    },
+    'css-loader'
+  ];
+  
+  if (extra) {
+    loaders.push(extra);
+  }
+  
+  return loaders;
+}
 
 module.exports = {
   mode: 'development',
@@ -35,7 +55,7 @@ module.exports = {
     analitics: './analitics.js',
   },
   output: {
-    filename: '[name].[hash].js',
+    filename: filename('js'),
     path: path.resolve(__dirname, 'dist')
   },
   resolve: {
@@ -64,23 +84,22 @@ module.exports = {
       }
     ]),
     new MiniExtractCssPlugin({
-      filename: '[name].[hash].css'
+      filename: filename('css')
     })
   ],
   module: {
     rules: [
       {
         test: /\.css$/,
-        use: [
-          {
-            loader: MiniExtractCssPlugin.loader,
-            options: {
-              hmr: isDev,
-              reloadAll: true
-            }
-          },
-          'css-loader'
-        ]
+        use: cssLoaders()
+      },
+      {
+        test: /\.less$/,
+        use: cssLoaders('less-loader')
+      },
+      {
+        test: /\.s[ca]ss$/,
+        use: cssLoaders('sass-loader')
       },
       {
         test: /.(png|jpg|svg|giv)$/,
